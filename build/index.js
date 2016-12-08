@@ -1,4 +1,3 @@
-var gu = require(__dirname+'/gu.js');
 var fs = require('fs');
 var fse = require('fs-extra');
 /*
