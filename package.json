@@ -1,0 +1,47 @@
+{
+	"name": "wawify",
+	"version": "0.0.2",
+	"description": "Terminal support for developers of wawify webpage.",
+	"license": "MIT",
+	"repository": "WebArtWork/wawify",
+	"author": {
+		"name": "Honchar Denys",
+		"email": "crackeraki@gmail.com"
+	},
+	"engines": {
+		"node": ">=4.4.7"
+	},
+	"main": "./index.js",
+	"keywords": [
+		"framework",
+		"wawify"
+	],
+	"bin": {
+		"wawify": "index.js"
+	},
+	"preferGlobal": "true",
+	"dependencies": {
+		"gitty": "*",
+		"morgan": "*",
+		"nodemon": "*",
+		"express": "*",
+		"fs-extra": "*",
+		"passport": "*",
+		"mongoose": "*",
+		"socket.io": "*",
+		"js-minify": "*",
+		"svg-fontify": "*",
+		"body-parser": "*",
+		"connect-mongo": "*",
+		"serve-favicon": "*",
+		"cookie-parser": "*",
+		"express-session": "*",
+		"method-override": "*",
+		"express-paginate": "*",
+		"passport.socketio": "*",
+		"socket.io-emitter": "*",
+		"mongoose-paginate": "*",
+		"node-sass-middleware": "*",
+		"socket.io-adapter-mongo": "*"
+	}
+}
