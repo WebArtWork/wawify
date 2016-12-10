@@ -7,6 +7,6 @@ directives.topbar = function() {
 		scope: {},
 		controller: function($scope) {
 		},
-		templateUrl: '/public/html/topbar.html'
+		templateUrl: '/html/topbar.html'
 	};
 };

@@ -5,19 +5,19 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
 	$stateProvider.state('Landing', {
 		url: '/',
 		controller: "Landing",
-		templateUrl: "/public/page/Landing.html"
+		templateUrl: "/page/Landing.html"
 	}).state('Collections', {
 		url: "/Collections",
 		controller: "Collections",
-		templateUrl: "/public/page/Collections.html"
+		templateUrl: "/page/Collections.html"
 	}).state('Products', {
 		url: "/Products",
 		controller: "Products",
-		templateUrl: "/public/page/Products.html"
+		templateUrl: "/page/Products.html"
 	}).state('AboutUs', {
 		url: "/AboutUs",
 		controller: "AboutUs",
-		templateUrl: "/public/page/AboutUs.html"
+		templateUrl: "/page/AboutUs.html"
 	});
 	$locationProvider.html5Mode(true);
 }).config(function ($translateProvider) {

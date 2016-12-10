@@ -25,7 +25,7 @@ module.exports = function(app){
 		production: false
 	});
 	var folders = ['components','svgs','gen','css','fonts','html','img','js','lang','page'];
-	app.get('/public/:folder/:file', function(req, res) {
+	app.get('/:folder/:file', function(req, res) {
 		for (var i = 0; i < folders.length; i++) {
 			if (folders[i] == req.params.folder)
 				return res.sendFile(process.cwd() + '/' + req.params.folder + '/' + req.params.file.replace('.map', '').replace('.scss', ''));
