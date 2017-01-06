@@ -1,6 +1,6 @@
 {
 	"name": "wawify",
-	"version": "0.0.7",
+	"version": "0.0.8",
 	"description": "Terminal support for developers of wawify webpage.",
 	"license": "MIT",
 	"repository": "WebArtWork/wawify",

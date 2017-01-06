@@ -14,6 +14,10 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
 		url: "/Products",
 		controller: "Products",
 		templateUrl: "/page/Products.html"
+	}).state('Product', {
+		url: "/Product",
+		controller: "Products",
+		templateUrl: "/page/Product.html"
 	}).state('AboutUs', {
 		url: "/AboutUs",
 		controller: "AboutUs",

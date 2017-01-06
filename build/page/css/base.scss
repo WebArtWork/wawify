@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed');
+@import url('https://fonts.googleapis.com/css?family=El+Messiri');
+html {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    font-family: 'Roboto Condensed', serif;
+    font-size: 16px;
+    line-height: 1.4;
+    position: relative;
+    color: #333;
+    display: block;
+    text-align: center;
+    background: #ECF0F1;
+}
+
+
+* {
+    outline: 0 !important;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+*:before,
+*:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.box {
+    display: table;
+    width: 100px;
+    height: 100%;
+}
+
+// *::-webkit-scrollbar {
+//     width: 8px;
+// }
+
+// *::-webkit-scrollbar-track {
+//     background-color: #191F20;
+//     border-width: 0px;
+// }
+
+// *::-webkit-scrollbar-thumb {
+//     background-color: #08090A;
+// }
+
+
+// Transition 
+@mixin transition($args...) {
+    -webkit-transition: $args;
+    -moz-transition: $args;
+    -ms-transition: $args;
+    -o-transition: $args;
+    transition: $args;
+}
+
+// @include transition(color .3s ease);
+// Box-shadow
+@mixin box-shadow($args...) {
+    -webkit-box-shadow: $args;
+    -moz-box-shadow: $args;
+    -ms-box-shadow: $args;
+    -o-box-shadow: $args;
+    box-shadow: $args;
+}
+
+// @include box-shadow( 0 0 0 1px black);
+// Animation
+@mixin keyframes($animation-name) {
+    @-webkit-keyframes #{$animation-name} {
+        @content;
+    }
+    @-moz-keyframes #{$animation-name} {
+        @content;
+    }
+    @-ms-keyframes #{$animation-name} {
+        @content;
+    }
+    @-o-keyframes #{$animation-name} {
+        @content;
+    }
+    @keyframes #{$animation-name} {
+        @content;
+    }
+}
+
+@mixin animation($str) {
+    -webkit-animation: #{$str};
+    -moz-animation: #{$str};
+    -ms-animation: #{$str};
+    -o-animation: #{$str};
+    animation: #{$str};
+}
+
+// @include keyframes(slide-down) {
+//   0% { opacity: 1; }
+//   90% { opacity: 0; }
+// }
+// .element {
+//   @include animation('slide-down 5s 3');
+// }
+// Clear fix
