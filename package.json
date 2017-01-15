@@ -1,6 +1,6 @@
 {
 	"name": "wawify",
-	"version": "0.0.8",
+	"version": "0.0.11",
 	"description": "Terminal support for developers of wawify webpage.",
 	"license": "MIT",
 	"repository": "WebArtWork/wawify",
@@ -33,7 +33,9 @@
 		"serve-favicon": "*",
 		"cookie-parser": "*",
 		"express-session": "*",
+		"request-promise": "*",
 		"method-override": "*",
+		"recursive-readdir": "*",
 		"node-sass-middleware": "*"
 	}
 }

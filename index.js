@@ -29,6 +29,16 @@ if(process.argv[2]){
 		case 'u':
 		case 'update':
 			return require(__dirname+'/build').update();
+		case 'd':
+		case 'dev':
+			return require(__dirname+'/build/user.js').pull();
+		case 'o':
+		case 'off':
+			return require(__dirname+'/build/user.js').off();
+		case 'l':
+		case 'log':
+			return require(__dirname+'/build/user.js')
+			.log(process.argv[3], process.argv[4]);
 		case '--version':
 		case '-version':
 		case '--v':
