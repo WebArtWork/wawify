@@ -18,7 +18,7 @@ if (fs.existsSync(__dirname+'/user.json')) {
 		if (user.devToken) {
 			createFromDefault(page, dest);
 			gu.close('You have logged in with username: ' + user.username);
-		} else createFromDefault(page);
+		} else createFromDefault(page, dest);
 	};
 	var createFromDefault = function(page, dest){
 		fse.copySync(__dirname + '/page', dest);
@@ -34,14 +34,36 @@ if (fs.existsSync(__dirname+'/user.json')) {
 	module.exports.fetch = function(){
 		checkThemeAvailability(false, function(answer){
 			if (answer.notUser) userService.off();
-			else if (answer.update) fetch();
+			else if (answer.update) fetch(answer.files, 0);
 			else if (answer.themeDoNotExists) {
 				gu.close('Theme do not exists.');
 			}
 		});
 	};
-	var fetch = function(){
-
+	var fetch = function(files, i){
+		if(files.length==0) return;
+		var path = process.cwd() + files[i].url;
+		if (!fs.existsSync(path)) {
+			files[i].sync = true;
+		} else {
+			var fileInfo = fs.statSync(path);
+			var timediff = new Date(fileInfo.mtime).getTime() - new Date(files[i].mtime).getTime();
+			if (timediff > 1000 || timediff < -1000 ||
+				fileInfo.size != files[i].size)
+				files[i].sync = true;
+		}
+		if(files[i].sync){
+			var theme = fse.readJsonSync(process.cwd()+'/theme.json', {throws: false});
+			$http({
+				method: 'POST',
+				uri: 'http://localhost:3265/api/theme/file/fetch/'+theme.name+'/'+user.devToken+'/'+user.username+files[i].url
+			}).then(function(resp){
+				fse.outputFile(path, resp, function(err) {
+					fs.utimesSync(path, fileInfo.atime, new Date(files[i].mtime));
+					if(++i<files.length) fetch(files, i);
+				});
+			});
+		}else if(++i<files.length) fetch(files, i);
 	}
 /*
 	wawify update
@@ -52,14 +74,29 @@ if (fs.existsSync(__dirname+'/user.json')) {
 			else if (answer.update) update(answer.files, 0);
 			else if (answer.somethingWentWrong) {
 				gu.close('Something went wrong.');
-			} else if (answer.themeCreated) update();
+			} else if (answer.themeCreated){
+				recursive(process.cwd(), function(err, files) {
+					var filesInfo = [];
+					for (var i = 0; i < files.length; i++) {
+						var fileInfo = fs.statSync(files[i]);
+						filesInfo.push({
+							base: files[i],
+							url: files[i].replace(process.cwd(), ''),
+							mtime: fileInfo.mtime,
+							size: fileInfo.size
+						});
+					}
+					update(filesInfo, 0);
+				});
+			}
 		});
 	};
 	var update = function(files, i){
+		if(files.length==0) return;
 		var theme = fse.readJsonSync(process.cwd()+'/theme.json', {throws: false});
 		$http({
 			method: 'POST',
-			uri: 'http://localhost:3265/api/theme/file/update/'+theme.name+'/'+user.devToken+'/'+user.username+files[i].url,
+			uri: 'http://localhost:3265/api/theme/file/update/'+theme.name+'/'+user.devToken+'/'+user.username+'/'+files[i].mtime+files[i].url,
 			formData: {
 				file: fs.createReadStream(files[i].base)
 			}
@@ -91,7 +128,7 @@ if (fs.existsSync(__dirname+'/user.json')) {
 					body: {
 						username: user.username,
 						devToken: user.devToken,
-						create: user.create,
+						create: create,
 						files: filesInfo,
 						name: theme.name
 					},
