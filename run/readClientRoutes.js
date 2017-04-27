@@ -24,19 +24,32 @@ module.exports = function(app){
 		prefix: themeInfo.name,
 		production: false
 	});
-	var folders = ['components','svgs','gen','css','fonts','html','img','js','lang','page'];
-	app.get('/:folder/:file', function(req, res) {
-		for (var i = 0; i < folders.length; i++) {
-			if (folders[i] == req.params.folder)
-				return res.sendFile(process.cwd() + '/' + req.params.folder + '/' + req.params.file.replace('.map', '').replace('.scss', ''));
+
+	var swig = require('derer');
+	swig = swig;
+	swig.setDefaults({
+		varControls: ['{{{', '}}}'],
+		cache: false
+	});
+	app.engine('html', swig.renderFile);
+	app.set('view engine', 'html');
+	app.set('view cache', true);
+	app.set('views', process.cwd() + '/page');
+
+	var filesSupported = ['.css', '.js', '.html', '.png', '.jpg', '.svg', '.mp3'];
+	app.use(function(req, res) {
+		for (var i = 0; i < filesSupported.length; i++) {
+			if (req.originalUrl.indexOf(filesSupported[i]) > -1) {
+				return res.sendFile(process.cwd() + req.originalUrl);
+			}
 		}
-		res.sendFile(process.cwd() + '/html/index.html');
-	});
-	app.get('/', function(req, res) {
-		res.sendFile(process.cwd() + '/html/index.html');
-	});
-	app.get('/*', function(req, res) {
-		res.sendFile(process.cwd() + '/html/index.html');
+		var path = process.cwd() + '/page';
+		if (req.originalUrl == '/') path += '/_index.html';
+		else path += req.originalUrl + '.html';
+		var tpl = swig.compileFile(path);
+		res.send(tpl({
+
+		}));
 	});
 }
 var getListOfComponents = function(dest){
