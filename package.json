@@ -1,42 +1,43 @@
 {
-	"name": "wawify",
-	"version": "1.0.1",
-	"description": "Terminal support for developers of wawify webpage.",
-	"license": "MIT",
-	"repository": "WebArtWork/wawify",
-	"author": {
-		"name": "Honchar Denys",
-		"email": "crackeraki@gmail.com"
-	},
-	"engines": {
-		"node": ">=4.4.7"
-	},
-	"main": "./index.js",
-	"keywords": [
-		"framework",
-		"wawify"
-	],
-	"bin": {
-		"wawify": "index.js"
-	},
-	"preferGlobal": "true",
-	"dependencies": {
-		"derer": "*",
-		"morgan": "*",
-		"nodemon": "*",
-		"express": "*",
-		"fs-extra": "*",
-		"passport": "*",
-		"mongoose": "*",
-		"js-minify": "*",
-		"svg-fontify": "*",
-		"body-parser": "*",
-		"serve-favicon": "*",
-		"cookie-parser": "*",
-		"express-session": "*",
-		"request-promise": "*",
-		"method-override": "*",
-		"recursive-readdir": "*",
-		"node-sass-middleware": "*"
-	}
+    "name": "wawify",
+    "version": "1.0.2",
+    "description": "Terminal support for developers of wawify webpage.",
+    "license": "MIT",
+    "repository": "WebArtWork/wawify",
+    "author": {
+        "name": "Honchar Denys",
+        "email": "crackeraki@gmail.com"
+    },
+    "engines": {
+        "node": ">=4.4.7"
+    },
+    "main": "./index.js",
+    "keywords": [
+        "framework",
+        "wawify"
+    ],
+    "bin": {
+        "wawify": "index.js"
+    },
+    "preferGlobal": "true",
+    "dependencies": {
+        "derer": "*",
+        "morgan": "*",
+        "nodemon": "*",
+        "request": "*",
+        "express": "*",
+        "fs-extra": "*",
+        "passport": "*",
+        "mongoose": "*",
+        "js-minify": "*",
+        "svg-fontify": "*",
+        "body-parser": "*",
+        "serve-favicon": "*",
+        "cookie-parser": "*",
+        "express-session": "*",
+        "request-promise": "*",
+        "method-override": "*",
+        "recursive-readdir": "*",
+        "node-sass-middleware": "*"
+    }
 }

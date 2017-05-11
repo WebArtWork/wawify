@@ -3,6 +3,16 @@ var minifier = require('js-minify');
 var fse = require('fs-extra');
 var path = require('path');
 var fs = require('fs');
+var request = require('request');
+var parallelKeyInObj = function(obj, func, callback){
+	var counter = 0;
+	for(var key in obj){
+		counter++;
+		func(key, obj[key], function(){
+			if(--counter===0) callback();
+		});
+	}
+}
 module.exports = function(app){
 	var themeInfo = fse.readJsonSync(process.cwd()+'/theme.json', {throws: false});
 	app.use(require('node-sass-middleware')({
@@ -37,19 +47,49 @@ module.exports = function(app){
 	app.set('views', process.cwd() + '/page');
 
 	var filesSupported = ['.css', '.js', '.html', '.png', '.jpg', '.svg', '.mp3'];
-	app.use(function(req, res) {
-		for (var i = 0; i < filesSupported.length; i++) {
-			if (req.originalUrl.indexOf(filesSupported[i]) > -1) {
-				return res.sendFile(process.cwd() + req.originalUrl);
-			}
-		}
-		var path = process.cwd() + '/page';
-		if (req.originalUrl == '/') path += '/_index.html';
-		else path += req.originalUrl + '.html';
-		var tpl = swig.compileFile(path);
-		res.send(tpl({
 
-		}));
+	parallelKeyInObj(themeInfo.pulls, function(place, url, callback){
+		request(url, function(error, response, body) {
+			themeInfo[place] = JSON.parse(body);
+			callback();
+		});
+	}, function(){
+		app.use(function(req, res) {
+			for (var i = 0; i < filesSupported.length; i++) {
+				if (req.originalUrl.indexOf(filesSupported[i]) > -1) {
+					return res.sendFile(process.cwd() + req.originalUrl);
+				}
+			}
+			var path = process.cwd() + '/page';
+			if(req.originalUrl=='/') path += '/_index.html';
+			else if(req.originalUrl.toLowerCase().indexOf(themeInfo.productRename.url)==0){
+				path += '/' + themeInfo.productRename.file+'.html';
+				var id = req.originalUrl.toLowerCase().replace(themeInfo.productRename.url, '').toString();
+				for (var i = themeInfo.products.length - 1; i >= 0; i--) {
+					if(themeInfo.products[i].id.toString()==id){
+						themeInfo.product=themeInfo.products[i];
+						break;
+					}
+				}
+				if(!Array.isArray(req.session.products)) req.session.products=[];
+				for (var i = req.session.products.length - 1; i >= 0; i--) {
+					if(req.session.products[i].id==themeInfo.product.id){
+						req.session.products.splice(i, 1);
+					}
+				}
+				req.session.products.unshift(themeInfo.product);
+				themeInfo.sessionProducts = req.session.products;
+			}else{
+				var correctPage = req.originalUrl.replace(new RegExp('/', 'g'), '').toLowerCase();
+				if(themeInfo.collectionRenames[correctPage]){
+					path += '/'+themeInfo.collectionRenames[correctPage]+'.html';
+					var order = themeInfo.collectionRenames[correctPage+'Order'];
+					themeInfo.collection =  themeInfo.collections[order];
+				}else path += req.originalUrl+'.html';
+			}
+			var tpl = swig.compileFile(path);
+			res.send(tpl(themeInfo));
+		});
 	});
 }
 var getListOfComponents = function(dest){

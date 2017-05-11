@@ -27,5 +27,21 @@ require(__dirname + '/readClientRoutes')(app);
 
 var fse = require('fs-extra');
 var themeInfo = fse.readJsonSync(process.cwd()+'/theme.json', {throws: false});
+
+var session = require('express-session');
+var store;
+var sessionMiddleware = session({
+	key: 'express.sid.'+themeInfo.prefix,
+	secret: 'thisIsCoolSecretFromWaWFramework'+themeInfo.prefix,
+	resave: false,
+	saveUninitialized: true,
+	cookie: {
+		maxAge: 365 * 24 * 60 * 60 * 1000
+	},
+	rolling: true,
+	store: store
+});
+app.use(sessionMiddleware);
+
 server.listen(themeInfo.port||8080);
 console.log("App listening on port " + (themeInfo.port||8080) );
