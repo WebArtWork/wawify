@@ -48,6 +48,12 @@ module.exports = function(app){
 	var addWawifyToUrl = function(url){
 		return 'https://wawify.com' + url.replace('https://wawify.com','');
 	}
+	var fixItemImages = function(item){
+		item.hoverUrl = addWawifyToUrl(item.hoverUrl);
+		for (var j = 0; j < item.hoverUrls.length; j++) {
+			item.hoverUrls[j] = addWawifyToUrl(item.hoverUrls[j]);
+		}
+	}
 	request('http://46.101.43.8:3265/api/template/get/'+themeInfo.template, function(error, response, body) {
 		var data = JSON.parse(body);
 		themeInfo.collections = data.collections;
@@ -71,15 +77,16 @@ module.exports = function(app){
 				}
 				if(!Array.isArray(req.session.items)) req.session.items=[];
 				for (var i = req.session.items.length - 1; i >= 0; i--) {
-					if(req.session.items[i].id==themeInfo.item._id){
+					if(req.session.items[i]._id==themeInfo.item._id){
 						req.session.items.splice(i, 1);
 					}
 				}
 				req.session.items.unshift(themeInfo.item);
 				themeInfo.sessionItems = req.session.items;
-				themeInfo.item.hoverUrl = addWawifyToUrl(themeInfo.item.hoverUrl);
-				for (var j = 0; j < themeInfo.item.hoverUrls.length; j++) {
-					themeInfo.item.hoverUrls[j] = addWawifyToUrl(themeInfo.item.hoverUrls[j]);
+				fixItemImages(themeInfo.item);
+				for (var j = 0; j < themeInfo.sessionItems.length; j++) {
+					fixItemImages(themeInfo.sessionItems[j]);
+					
 				}
 			}else{
 				var correctPage = req.originalUrl.replace(new RegExp('/', 'g'), '').toLowerCase();
@@ -90,7 +97,7 @@ module.exports = function(app){
 						path += '/Collection.html';
 						themeInfo.tag =  themeInfo.collections[i].tag;
 						for (var j = 0; j < themeInfo.tag.items.length; j++) {
-							themeInfo.tag.items[j].hoverUrl = addWawifyToUrl(themeInfo.tag.items[j].hoverUrl);
+							fixItemImages(themeInfo.tag.items[j]);
 						}
 						break;
 					}
