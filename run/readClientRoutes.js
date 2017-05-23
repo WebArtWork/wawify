@@ -34,7 +34,6 @@ module.exports = function(app){
 		prefix: themeInfo.name,
 		production: false
 	});
-
 	var swig = require('derer');
 	swig = swig;
 	swig.setDefaults({
@@ -45,15 +44,14 @@ module.exports = function(app){
 	app.set('view engine', 'html');
 	app.set('view cache', true);
 	app.set('views', process.cwd() + '/page');
-
 	var filesSupported = ['.css', '.js', '.html', '.png', '.jpg', '.svg', '.mp3'];
-
-	parallelKeyInObj(themeInfo.pulls, function(place, url, callback){
-		request(url, function(error, response, body) {
-			themeInfo[place] = JSON.parse(body);
-			callback();
-		});
-	}, function(){
+	var addWawifyToUrl = function(url){
+		return 'https://wawify.com' + url.replace('https://wawify.com','');
+	}
+	request('http://46.101.43.8:3265/api/template/get/'+themeInfo.template, function(error, response, body) {
+		var data = JSON.parse(body);
+		themeInfo.collections = data.collections;
+		themeInfo.items = data.items;
 		app.use(function(req, res) {
 			for (var i = 0; i < filesSupported.length; i++) {
 				if (req.originalUrl.indexOf(filesSupported[i]) > -1) {
@@ -65,29 +63,42 @@ module.exports = function(app){
 			else if(req.originalUrl.toLowerCase().indexOf(themeInfo.productRename.url)==0){
 				path += '/' + themeInfo.productRename.file+'.html';
 				var id = req.originalUrl.toLowerCase().replace(themeInfo.productRename.url, '').toString();
-				for (var i = themeInfo.products.length - 1; i >= 0; i--) {
-					if(themeInfo.products[i].id.toString()==id){
-						themeInfo.product=themeInfo.products[i];
+				for (var i = themeInfo.items.length - 1; i >= 0; i--) {
+					if(themeInfo.items[i]._id==id){
+						themeInfo.item=themeInfo.items[i];
 						break;
 					}
 				}
-				if(!Array.isArray(req.session.products)) req.session.products=[];
-				for (var i = req.session.products.length - 1; i >= 0; i--) {
-					if(req.session.products[i].id==themeInfo.product.id){
-						req.session.products.splice(i, 1);
+				if(!Array.isArray(req.session.items)) req.session.items=[];
+				for (var i = req.session.items.length - 1; i >= 0; i--) {
+					if(req.session.items[i].id==themeInfo.item._id){
+						req.session.items.splice(i, 1);
 					}
 				}
-				req.session.products.unshift(themeInfo.product);
-				themeInfo.sessionProducts = req.session.products;
+				req.session.items.unshift(themeInfo.item);
+				themeInfo.sessionItems = req.session.items;
+				themeInfo.item.hoverUrl = addWawifyToUrl(themeInfo.item.hoverUrl);
+				for (var j = 0; j < themeInfo.item.hoverUrls.length; j++) {
+					themeInfo.item.hoverUrls[j] = addWawifyToUrl(themeInfo.item.hoverUrls[j]);
+				}
 			}else{
 				var correctPage = req.originalUrl.replace(new RegExp('/', 'g'), '').toLowerCase();
-				if(themeInfo.collectionRenames[correctPage]){
-					path += '/'+themeInfo.collectionRenames[correctPage]+'.html';
-					var order = themeInfo.collectionRenames[correctPage+'Order'];
-					themeInfo.collection =  themeInfo.collections[order];
-				}else path += req.originalUrl+'.html';
+				var notFound = true;
+				for (var i = 0; i < themeInfo.collections.length; i++) {
+					if(themeInfo.collections[i].url.toLowerCase() == correctPage){
+						notFound = false;
+						path += '/Collection.html';
+						themeInfo.tag =  themeInfo.collections[i].tag;
+						for (var j = 0; j < themeInfo.tag.items.length; j++) {
+							themeInfo.tag.items[j].hoverUrl = addWawifyToUrl(themeInfo.tag.items[j].hoverUrl);
+						}
+						break;
+					}
+				}
+				if(notFound) path += req.originalUrl+'.html';
 			}
 			var tpl = swig.compileFile(path);
+			themeInfo.url = req.originalUrl;
 			res.send(tpl(themeInfo));
 		});
 	});
