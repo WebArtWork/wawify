@@ -4,6 +4,10 @@ var gu = require(__dirname+'/gu.js');
 var userService = require(__dirname+'/user.js');
 var $http = require('request-promise');
 var recursive = require('recursive-readdir');
+var git = require('gitty');
+var wawPages = {
+	ng: 'git@github.com:WebArtWork/wawAngular.git'
+}
 
 if (fs.existsSync(__dirname+'/user.json')) {
 	var user = fse.readJsonSync(__dirname+'/user.json', {throws: false});
@@ -14,19 +18,33 @@ if (fs.existsSync(__dirname+'/user.json')) {
 	module.exports.create = function(page){
 		var dest = process.cwd() + '/' + page.replace(/[^\w\s]/gi, '').toLowerCase();
 		if(fs.existsSync(dest))
-			return close('This page already exists');
+			gu.close('This page already exists');
 		if (user.devToken) {
+			gu.log('You have logged in with username: ' + user.username);
 			createFromDefault(page, dest);
-			gu.close('You have logged in with username: ' + user.username);
 		} else createFromDefault(page, dest);
 	};
 	var createFromDefault = function(page, dest){
-		fse.copySync(__dirname + '/page', dest);
-		writeFile(dest + '/theme.json', [{
-			from: 'PAGENAME',
-			to: page.replace(/[^\w\s]/gi, '').toLowerCase()
-		}], dest + '/theme.json');
-		gu.close("Theme has been successfully created.");
+		fse.ensureDir(page);
+		var clientRepo = git(page);
+		clientRepo.init(function() {
+			clientRepo.addRemote('origin', wawPages.ng, function(err) {
+				clientRepo.checkout('master', ['-b'], function(err) {
+					clientRepo.pull('origin', 'master', function() {
+						fse.removeSync(page + '/.git');
+						fse.removeSync(page + '/.gitignore');
+						fse.removeSync(page + '/server.js');
+						fse.removeSync(page + '/config.json');
+						fse.copySync(__dirname+'/theme.json', page+'/theme.json');
+						writeFile(page+'/theme.json', [{
+							from: 'PAGENAME',
+							to: page.replace(/[^\w\s]/gi, '').toLowerCase()
+						}], page+'/theme.json');
+						gu.close("Theme has been successfully created.");
+					});
+				});
+			});
+		});		
 	}
 /*
 	wawify fetch
