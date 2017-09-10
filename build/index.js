@@ -20,7 +20,7 @@ if (fs.existsSync(__dirname+'/user.json')) {
 		if(fs.existsSync(dest))
 			gu.close('This page already exists');
 		if (user.devToken) {
-			gu.log('You have logged in with username: ' + user.username);
+			//gu.log('You have logged in with username: ' + user.username);
 			createFromDefault(page, dest);
 		} else createFromDefault(page, dest);
 	};
